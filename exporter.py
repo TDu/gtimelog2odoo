@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import emoji
 import sys
 import configparser
 import pathlib
@@ -127,6 +128,7 @@ class Utils:
                 print("    ", issue)
                 for log in issue_logs:
                     print("      ", log.human_duration, ":", log.comment)
+                print(emoji.emojize(':seedling:'))
 
     @classmethod
     def report(cls, to_create, to_delete, to_check, attendances):
