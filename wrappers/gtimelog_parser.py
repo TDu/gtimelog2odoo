@@ -5,6 +5,8 @@ except ImportError:
     print('you have to install gtimelog first (pip install gtimelog)')
     raise
 
+import emoji
+
 from datetime import date
 
 from .multi_log import MultiLog
@@ -57,10 +59,11 @@ class GtimelogParser(object):
                     if x.strip()
                 ]
             except ValueError:
-                print(
-                    'Entry must be in the format `{}`. '
-                    'Got '.format(self.line_format_str), entry
-                )
+                print('{0:<10} {1:} {2:}'.format('', emoji.emojize(':collision:'), entry))
+                # print(
+                #     'Entry must be in the format `{}`. '
+                #     'Got '.format(self.line_format_str), entry
+                # )
                 continue
 
             # no matter what we find as `issue`:

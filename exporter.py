@@ -119,52 +119,74 @@ class Utils:
         return result
 
     @classmethod
-    def _report_log(cls, logs):
+    def _report_log(cls, logs, log_emoji=''):
         for day, day_logs in groupby(logs, key=lambda e: e.date):
             day_logs = tuple(day_logs)  # we have to iterate twice
             day_duration = sum([d.duration for d in day_logs])
-            print("  ", day, "-", MultiLog._human_duration(day_duration))
+            # print("  ", day, "-", MultiLog._human_duration(day_duration))
             for issue, issue_logs in groupby(day_logs, key=lambda e: e.issue):
-                print("    ", issue)
+                # print("    ", issue)
                 for log in issue_logs:
-                    print("      ", log.human_duration, ":", log.comment)
-                print(emoji.emojize(':seedling:'))
+                    # print(issue, emoji.emojize(log_emoji), day, log.human_duration, ":", log.comment)
+                    print('{0:<10} {1:} {2:} {3:} : {4:}'.format(issue, emoji.emojize(log_emoji), day, log.human_duration, log.comment))
+                # print(emoji.emojize(':seedling:'))
 
     @classmethod
     def report(cls, to_create, to_delete, to_check, attendances):
-        print("Jira Worklogs")
-        print("=============")
-        if to_create:
-            print("Create")
-            cls._report_log(to_create)
-
+        # print("Jira Worklogs")
+        # print("=============")
         if to_delete:
             print()
-            print("Delete")
-            cls._report_log(to_delete)
+            # print("Delete")
+            cls._report_log(to_delete, ':ghost:')
+
+        if to_create:
+            # print("Create")
+            print()
+            cls._report_log(to_create, ':seedling:')
 
         if to_check:
             print()
-            print("Not matching - TO CHECK")
-            print("")
+            # print("Not matching - TO CHECK")
+            # print("")
             for issue, reason in to_check.items():
-                print("  ", issue, ':', reason)
+                print('{0:<10} {1:} {2:}'.format(issue, emoji.emojize(':question_mark:'), reason))
+                # print(emoji.emojize(':question_mark:'), "  ", issue, ':', reason)
 
-        if not to_check and not to_delete and not to_create:
-            print()
-            print('All done, nothing to do.')
+        # if not to_check and not to_delete and not to_create:
+        #     print()
+        #     print('All done, nothing to do.')
 
         print()
-        print("Odoo Attendances")
-        print("================")
+        # print("Odoo Attendances")
+        # print("================")
+        total_attendance = timedelta(0)
         for day, day_attendances \
                 in groupby(attendances, key=lambda e: e[0].date()):
-            print("{}".format(day))
+            # print("{}".format(day))
             for attendance in day_attendances:
-                print("  {} → {}".format(
+                # print("  {} → {}".format(
+                if not attendance[1]:
+                    time_done = datetime.now() - attendance[0]
+                    pass
+                    # No end of attendance should compute elpased time to now
+                else:
+                    time_done = attendance[1] - attendance[0]
+
+                    pass
+                total_attendance += time_done
+                print("   {}  {} → {}".format(
+                    day,
                     attendance[0].time(),
-                    attendance[1] and attendance[1].time()
+                    (attendance[1] or '') and attendance[1].time(),
                 ))
+
+        print()
+        seconds = total_attendance.total_seconds()
+        hours = seconds // 3600
+        minutes = (seconds % 3600) / 60
+
+        print(emoji.emojize(':watch:') + ' Weekly total : {0:.0f} h {1:.0f} m'.format(hours, minutes))
 
 
 if __name__ == '__main__':
