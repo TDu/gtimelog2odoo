@@ -78,8 +78,4 @@ class GtimelogParser(object):
                 description
             ))
 
-        # Dangling attendance for today
-        if attendances and attendances[-1][1].date() == date.today():
-            attendances[-1] = (attendances[-1][0], None)
-
         return attendances, worklogs
